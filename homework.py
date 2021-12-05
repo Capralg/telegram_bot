@@ -1,7 +1,8 @@
 import requests
 import os
 import time
-import logging, sys
+import logging
+import sys
 
 from dotenv import load_dotenv
 from telegram import Bot
