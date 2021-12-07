@@ -86,26 +86,29 @@ def check_response(response):
 
 def parse_status(homework):
     """Функция извлечения статуса домашней работы."""
+    homework_name = ''
+    homework_status = ''
     try:
-        homework_name = homework.get('homework_name')
+        homework_name = homework['homework_name']
     except KeyError as error:
         error_message = f'В словаре нет ключа homework_name {error}'
         logger.error(error_message)
+    except TypeError as error:
+        error_message = f'На входе функции не словарь {error}'
+        logger.error(error_message)
     try:
         homework_status = homework['status']
+        if homework_status not in HOMEWORK_STATUSES:
+            error_message = 'Получен неизвестный статус'
+            logger.error(error_message)
+            raise Exception(error_message)
     except KeyError as error:
         error_message = f'В словаре нет ключа status {error}'
         logger.error(error_message)
-    if homework_status not in HOMEWORK_STATUSES:
-        error_message = 'Получен неизвестный статус'
+    except TypeError as error:
+        error_message = f'На входе функции не словарь {error}'
         logger.error(error_message)
-        raise Exception(error_message)
-    if homework_status == 'approved':
-        verdict = HOMEWORK_STATUSES[homework_status]
-    elif homework_status == 'rejected':
-        verdict = HOMEWORK_STATUSES[homework_status]
-    else:
-        verdict = HOMEWORK_STATUSES[homework_status]
+    verdict = HOMEWORK_STATUSES[homework_status]
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
@@ -139,8 +142,9 @@ def main():
     while True:
         try:
             # current_timestamp = int(time.time())
-            response = get_api_answer(1634860800)
-            homework = check_response(response)
+            # response = get_api_answer(1634860800)
+            # homework = check_response(response)
+            homework = 'status'
             status = parse_status(homework)
             if previous_status != status:
                 send_message(bot, status)
