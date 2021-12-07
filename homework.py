@@ -7,10 +7,6 @@ import sys
 from dotenv import load_dotenv
 from telegram import Bot
 
-# import telegram
-# from telegram.ext import Updater
-
-
 load_dotenv()
 
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
@@ -129,8 +125,6 @@ def main():
     tokens = check_tokens()
     previous_status = ''
     old_message = ''
-    # bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    # current_timestamp = int(time.time())
     try:
         if not tokens:
             raise Exception
@@ -141,10 +135,9 @@ def main():
 
     while True:
         try:
-            # current_timestamp = int(time.time())
-            # response = get_api_answer(1634860800)
-            # homework = check_response(response)
-            homework = 'status'
+            current_timestamp = int(time.time())
+            response = get_api_answer(current_timestamp)
+            homework = check_response(response)
             status = parse_status(homework)
             if previous_status != status:
                 send_message(bot, status)
@@ -157,8 +150,6 @@ def main():
                 send_message(bot, message)
                 old_message = message
             time.sleep(RETRY_TIME)
-        # else:
-            # previous_status = status
 
 
 if __name__ == '__main__':
