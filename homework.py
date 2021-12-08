@@ -1,19 +1,20 @@
-
-from exceptions import ConnectionException
-import requests
 import os
+import sys
 import time
 import logging
-import sys
+import requests
 
-sys.path.append(os.path.abspath(
-    "/Users/sunshine/Dev/homework_bot/"))
+from http import HTTPStatus
 
 from dotenv import load_dotenv
 from telegram import Bot
 
-from http import HTTPStatus
 
+
+from exceptions import ConnectionException
+
+sys.path.append(os.path.abspath(
+    "/Users/sunshine/Dev/homework_bot/"))
 
 load_dotenv()
 
