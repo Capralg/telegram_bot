@@ -9,8 +9,6 @@ from http import HTTPStatus
 from dotenv import load_dotenv
 from telegram import Bot
 
-
-
 from exceptions import ConnectionException
 
 sys.path.append(os.path.abspath(
