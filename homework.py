@@ -1,13 +1,19 @@
+
+from exceptions import ConnectionException
 import requests
 import os
 import time
 import logging
 import sys
 
+sys.path.append(os.path.abspath(
+    "/Users/sunshine/Dev/homework_bot/"))
+
 from dotenv import load_dotenv
 from telegram import Bot
 
-from .exceptions import ConnectionException
+from http import HTTPStatus
+
 
 load_dotenv()
 
@@ -57,7 +63,7 @@ def get_api_answer(current_timestamp):
     homework_statuses = requests.get(
         ENDPOINT, headers=HEADERS, params=params)
 
-    if homework_statuses.status_code != 200:
+    if homework_statuses.status_code != HTTPStatus.OK:
         raise ConnectionException('Ошибка соединения с API-сервисом')
 
     return homework_statuses.json()
