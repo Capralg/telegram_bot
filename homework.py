@@ -7,6 +7,8 @@ import sys
 from dotenv import load_dotenv
 from telegram import Bot
 
+from .exceptions import ConnectionException
+
 load_dotenv()
 
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
@@ -23,12 +25,6 @@ HOMEWORK_STATUSES = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
-
-
-class ConnectionException(Exception):
-    """Ошибка соединения с API-сервисом."""
-
-    pass
 
 
 logger = logging.getLogger(__name__)
@@ -51,7 +47,6 @@ def send_message(bot, message):
         bot.send_message(TELEGRAM_CHAT_ID, message)
     except Exception as e:
         logger.error(f'Сообщение не отправлено {e}')
-    return
 
 
 def get_api_answer(current_timestamp):
@@ -74,9 +69,13 @@ def check_response(response):
     if not isinstance(response, dict):
         message = 'Ответ API не словарь'
         raise TypeError(message)
-    if len(response['homeworks']) <= 0:
-        message = 'Домашняя работа не передана на проверку'
-        raise IndexError(message)
+    try:
+        if len(response['homeworks']) <= 0:
+            message = 'Домашняя работа не передана на проверку'
+            raise IndexError(message)
+    except KeyError as error:
+        error_message = f'В словаре нет ключа homeworks {error}'
+        logger.error(error_message)
     return response['homeworks'][0]
 
 
@@ -113,7 +112,6 @@ def check_tokens():
     if (PRACTICUM_TOKEN is None
             and TELEGRAM_TOKEN is None
             and TELEGRAM_CHAT_ID is None):
-        print(PRACTICUM_TOKEN)
         return False
     else:
         return True
@@ -125,10 +123,7 @@ def main():
     tokens = check_tokens()
     previous_status = ''
     old_message = ''
-    try:
-        if not tokens:
-            raise Exception
-    except Exception:
+    if not tokens:
         message = 'Отсутствие обязательных переменных окружения'
         logger.critical(message)
         send_message(bot, message)
